@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 contract V8S {
     struct Project {
         string url;
+        string decodeType;
     }
 
     struct Request {
@@ -26,9 +27,9 @@ contract V8S {
     uint public nextRequestId = 0;
     uint public nextResponseId = 0;
 
-    function addProject(string memory url) public returns (uint) {
+    function addProject(string memory url, string memory decodeType) public returns (uint) {
         uint projectId = nextProjectId++;
-        projects[projectId] = Project(url);
+        projects[projectId] = Project(url, decodeType);
         return projectId;
     }
 
