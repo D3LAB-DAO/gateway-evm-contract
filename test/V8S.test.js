@@ -5,22 +5,21 @@ describe("V8S", function () {
 
   let v8s;
 
-  let nextProjectId = 0;
-  let nextRequestId = 0;
-  let nextResponseId = 0;
-
   const poolInfo = [
     {
       url: "https://raw.githubusercontent.com/D3LAB-DAO/gateway-backend/main/examples/simple_addition.js",
-      inputParams: { "a": 5, "b": 3 }
+      inputParams: { "a": 5, "b": 3 },
+      decodeType: "address,uint256"
     },
     {
       url: "https://raw.githubusercontent.com/D3LAB-DAO/gateway-backend/main/examples/circle_area.js",
-      inputParams: { "a": 5, "b": 3 }
+      inputParams: { "a": 5, "b": 3 },
+      decodeType: "address,uint256"
     },
     {
       url: "https://raw.githubusercontent.com/D3LAB-DAO/gateway-backend/main/examples/chat.js",
-      inputParams: { "a": 5, "b": 3 }
+      inputParams: { "a": 5, "b": 3 },
+      decodeType: "address,uint256"
     }
   ]
 
@@ -42,85 +41,37 @@ describe("V8S", function () {
   })
 
   describe("Add Project", async () => {
-
-    it("url1", async () => {
-      expect(await v8s.nextProjectId()).to.equal(nextProjectId);
-
-      await v8s.addProject(poolInfo[nextProjectId].url);
-
-      let project = await v8s.projects(nextProjectId);
-      expect(project).to.equal(poolInfo[nextProjectId].url);
-
-      nextProjectId++;
-      expect(await v8s.nextProjectId()).to.equal(nextProjectId);
-    })
-    it("url2", async () => {
-      expect(await v8s.nextProjectId()).to.equal(nextProjectId);
-
-      await v8s.addProject(poolInfo[nextProjectId].url);
-
-      let project = await v8s.projects(nextProjectId);
-      expect(project).to.equal(poolInfo[nextProjectId].url);
-
-      nextProjectId++;
-      expect(await v8s.nextProjectId()).to.equal(nextProjectId);
-    })
-    it("url3", async () => {
-      expect(await v8s.nextProjectId()).to.equal(nextProjectId);
-
-      await v8s.addProject(poolInfo[nextProjectId].url);
-
-      let project = await v8s.projects(nextProjectId);
-      expect(project).to.equal(poolInfo[nextProjectId].url);
-
-      nextProjectId++;
-      expect(await v8s.nextProjectId()).to.equal(nextProjectId);
-    })
+    for(let i = 0; i < poolInfo.length; i++) {
+      it(`url${i+1}`, async () => {
+        expect(await v8s.nextProjectId()).to.equal(i);
+        await v8s.addProject(poolInfo[i].url, poolInfo[i].decodeType);
+        let project = await v8s.projects(i);
+        expect(project.url).to.equal(poolInfo[i].url);
+        expect(project.decodeType).to.equal(poolInfo[i].decodeType);
+      })
+    }
   })
 
   describe("Add Request", async () => {
-
-    it("request1", async () => {
-      let data = jsonToHexString(JSON.stringify(poolInfo[nextRequestId].inputParams));
-      expect(await v8s.nextRequestId()).to.equal(nextRequestId);
-      await v8s.addRequest(0, data);
-      let request = await v8s.requests(nextRequestId);
-      expect(request[0]).to.equal(data);
-      nextRequestId++;
-      expect(await v8s.nextRequestId()).to.equal(nextRequestId);
-    })
-
-    it("request2", async () => {
-      let data = jsonToHexString(JSON.stringify(poolInfo[nextRequestId].inputParams));
-      expect(await v8s.nextRequestId()).to.equal(nextRequestId);
-      await v8s.addRequest(0, data);
-      let request = await v8s.requests(nextRequestId);
-      expect(request[0]).to.equal(data);
-      nextRequestId++;
-      expect(await v8s.nextRequestId()).to.equal(nextRequestId);
-    })
-
-    it("request2", async () => {
-      let data = jsonToHexString(JSON.stringify(poolInfo[nextRequestId].inputParams));
-      expect(await v8s.nextRequestId()).to.equal(nextRequestId);
-      await v8s.addRequest(0, data);
-      let request = await v8s.requests(nextRequestId);
-      expect(request[0]).to.equal(data);
-      nextRequestId++;
-      expect(await v8s.nextRequestId()).to.equal(nextRequestId);
-    })
+    for(let i = 0; i < poolInfo.length; i++) {
+      it(`request${i+1}`, async () => {
+        let data = jsonToHexString(JSON.stringify(poolInfo[i].inputParams));
+        expect(await v8s.nextRequestId()).to.equal(i);
+        await v8s.addRequest(i, data);
+        let request = await v8s.requests(i);
+        expect(request.data).to.equal(data);
+        expect(request.hasResponse).to.equal(false);
+      })
+    }
   })
 
   describe("Add Response", async () => {
-
     it("response1", async () => {
       let responseData = jsonToHexString('{"result": 8}');
-      expect(await v8s.nextResponseId()).to.equal(nextResponseId);
       await v8s.addResponse(0, responseData);
-      let response = await v8s.responses(nextResponseId);
-      expect(response.responseData).to.equal(responseData);
-      nextResponseId++;
-      expect(await v8s.nextResponseId()).to.equal(nextResponseId);
+      let request = await v8s.requests(0);
+      expect(request.responseData).to.equal(responseData);
+      expect(request.hasResponse).to.equal(true);
     })
   })
 

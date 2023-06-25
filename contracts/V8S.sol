@@ -11,21 +11,14 @@ contract V8S {
         bytes data;
         uint projectId;
         bool hasResponse;
-    }
-
-    struct Response {
         bytes responseData;
-        uint requestId;
     }
 
     mapping(uint => Project) public projects;
     mapping(uint => Request) public requests;
-    mapping(uint => Response) public responses;
-    mapping(uint => uint) public requestToResponse;
 
     uint public nextProjectId = 0;
     uint public nextRequestId = 0;
-    uint public nextResponseId = 0;
 
     function addProject(string memory url, string memory decodeType) public returns (uint) {
         uint projectId = nextProjectId++;
@@ -38,36 +31,28 @@ contract V8S {
         bytes memory data
     ) public returns (uint) {
         uint requestId = nextRequestId++;
-        requests[requestId] = Request(data, projectId, false);
+        requests[requestId] = Request(data, projectId, false, "");
         return requestId;
     }
 
     function addResponse(
         uint requestId,
         bytes memory responseData
-    ) public returns (uint) {
-        uint responseId = nextResponseId++;
-        responses[responseId] = Response(responseData, requestId);
-        requestToResponse[requestId] = responseId;
+    ) public {
+        requests[requestId].responseData = responseData;
         requests[requestId].hasResponse = true;
-        return responseId;
     }
 
     function getRequest(
         uint requestId
     ) public view returns (uint, string memory, bytes memory) {
-        uint projectId = requests[requestId].projectId;
-        return (projectId, projects[projectId].decodeType, requests[requestId].data);
+        return (requests[requestId].projectId, projects[requests[requestId].projectId].decodeType, requests[requestId].data);
     }
 
     function getResponse(
         uint requestId
-    ) public view returns (bytes memory, uint) {
-        uint responseId = requestToResponse[requestId];
-        return (
-            responses[responseId].responseData,
-            responses[responseId].requestId
-        );
+    ) public view returns (bytes memory) {
+        return requests[requestId].responseData;
     }
 
     function isResponseExists(uint requestId) public view returns (bool) {
