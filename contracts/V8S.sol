@@ -55,8 +55,9 @@ contract V8S {
 
     function getRequest(
         uint requestId
-    ) public view returns (bytes memory, uint) {
-        return (requests[requestId].data, requests[requestId].projectId);
+    ) public view returns (uint, string memory, bytes memory) {
+        uint projectId = requests[requestId].projectId;
+        return (projectId, projects[projectId].decodeType, requests[requestId].data);
     }
 
     function getResponse(
