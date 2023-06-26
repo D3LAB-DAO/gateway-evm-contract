@@ -4,7 +4,6 @@ pragma solidity ^0.8.9;
 contract V8S {
     struct Project {
         string url;
-        string decodeType;
     }
 
     struct Request {
@@ -21,11 +20,10 @@ contract V8S {
     uint256 public nextRequestId = 0;
 
     function addProject(
-        string memory url,
-        string memory decodeType
+        string memory url
     ) public returns (uint256) {
         uint256 projectId = nextProjectId++;
-        projects[projectId] = Project(url, decodeType);
+        projects[projectId] = Project(url);
         return projectId;
     }
 
@@ -45,10 +43,9 @@ contract V8S {
 
     function getRequest(
         uint256 requestId
-    ) public view returns (uint256, string memory, bytes memory) {
+    ) public view returns (uint256, bytes memory) {
         return (
             requests[requestId].projectId,
-            projects[requests[requestId].projectId].decodeType,
             requests[requestId].data
         );
     }

@@ -9,17 +9,14 @@ describe("V8S", function () {
     {
       url: "https://raw.githubusercontent.com/D3LAB-DAO/gateway-backend/main/examples/simple_addition.js",
       inputParams: { "a": 5, "b": 3 },
-      decodeType: "address,uint256"
     },
     {
       url: "https://raw.githubusercontent.com/D3LAB-DAO/gateway-backend/main/examples/circle_area.js",
       inputParams: { "a": 5, "b": 3 },
-      decodeType: "address,uint256"
     },
     {
       url: "https://raw.githubusercontent.com/D3LAB-DAO/gateway-backend/main/examples/chat.js",
       inputParams: { "a": 5, "b": 3 },
-      decodeType: "address,uint256"
     }
   ]
 
@@ -44,10 +41,9 @@ describe("V8S", function () {
     for(let i = 0; i < poolInfo.length; i++) {
       it(`url${i+1}`, async () => {
         expect(await v8s.nextProjectId()).to.equal(i);
-        await v8s.addProject(poolInfo[i].url, poolInfo[i].decodeType);
+        await v8s.addProject(poolInfo[i].url);
         let project = await v8s.projects(i);
-        expect(project.url).to.equal(poolInfo[i].url);
-        expect(project.decodeType).to.equal(poolInfo[i].decodeType);
+        expect(project).to.equal(poolInfo[i].url);
       })
     }
   })
