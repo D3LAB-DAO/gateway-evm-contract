@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 const ca = require("../config/contractAddrs.json");
 
-const url = "https://raw.githubusercontent.com/D3LAB-DAO/gateway-backend/main/examples/simple_addition.js";
+const url = "https://raw.githubusercontent.com/v8s-layer/gateway-backend/dev/examples/telegramAlarmBot.js";
 
 let tx;
 
@@ -11,6 +11,10 @@ async function addProject() {
   tx = await contract.addProject(url);
   await tx.wait();
   console.log("tx hash:", tx.hash);
+
+  const projectId = await contract.nextProjectId() - 1n;
+  console.log("projectId:", projectId);
+  console.log("projects:", await contract.projects(projectId));
 }
 
 addProject();
