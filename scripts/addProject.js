@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 const ca = require("../config/contractAddrs.json");
 
-const url = "https://raw.githubusercontent.com/v8s-layer/gateway-backend/dev/examples/telegramAlarmBot.js";
+const url = "https://raw.githubusercontent.com/v8s-layer/gateway-backend/main/examples/telegramAlarmBot.js";
 
 let tx;
 
